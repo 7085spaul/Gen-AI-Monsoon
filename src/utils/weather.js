@@ -108,6 +108,10 @@ export async function getWeatherForecast(location, days = 5) {
   }
 }
 
+export function getWeatherApiKey() {
+  return weatherApiKey || 'testWeatherApiKey123456';
+}
+
 export async function getWeatherAlerts(location) {
   if (!openWeatherApiKey) {
     return [];

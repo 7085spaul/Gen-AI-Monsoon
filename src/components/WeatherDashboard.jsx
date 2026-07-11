@@ -103,56 +103,60 @@ function WeatherDashboard({ userLocation, userProfile, onLoadingChange }) {
     );
   }
 
-  const riskLevel = getMonsoonRiskLevel(weatherData);
+  const riskLevel = React.useMemo(() => getMonsoonRiskLevel(weatherData), [weatherData]);
+  const alertLevel = aiAlert?.alertLevel;
+  const alertTitle = aiAlert?.alertTitle;
+  const alertDescription = aiAlert?.description || (aiAlert?.rawResponse ? aiAlert.rawResponse.substring(0, 200) : (alertLoading ? 'Fetching AI alert...' : 'No alert available.'));
+  const alertActions = aiAlert?.recommendedActions;
 
   return (
     <div className="space-y-6">
       {/* AI Alert Banner */}
       {(aiAlert || alertLoading) && (
         <div className={`card border-l-4 ${
-          aiAlert?.alertLevel === 'Red' ? 'border-danger-500 bg-danger-50' :
-          aiAlert?.alertLevel === 'Orange' ? 'border-warning-500 bg-warning-50' :
-          aiAlert?.alertLevel === 'Yellow' ? 'border-primary-500 bg-primary-50' :
+          alertLevel === 'Red' ? 'border-danger-500 bg-danger-50' :
+          alertLevel === 'Orange' ? 'border-warning-500 bg-warning-50' :
+          alertLevel === 'Yellow' ? 'border-primary-500 bg-primary-50' :
           'border-success-500 bg-success-50'
         }`}>
           <div className="flex items-start gap-3">
             <AlertTriangle className={`${
-              aiAlert?.alertLevel === 'Red' ? 'text-danger-600' :
-              aiAlert?.alertLevel === 'Orange' ? 'text-warning-600' :
-              aiAlert?.alertLevel === 'Yellow' ? 'text-primary-600' :
+              alertLevel === 'Red' ? 'text-danger-600' :
+              alertLevel === 'Orange' ? 'text-warning-600' :
+              alertLevel === 'Yellow' ? 'text-primary-600' :
               'text-success-600'
             }`} size={24} />
             <div className="flex-1">
               <h3 className={`font-semibold ${
-                aiAlert?.alertLevel === 'Red' ? 'text-danger-800' :
-                aiAlert?.alertLevel === 'Orange' ? 'text-warning-800' :
-                aiAlert?.alertLevel === 'Yellow' ? 'text-primary-800' :
+                alertLevel === 'Red' ? 'text-danger-800' :
+                alertLevel === 'Orange' ? 'text-warning-800' :
+                alertLevel === 'Yellow' ? 'text-primary-800' :
                 'text-success-800'
               }`}>
-                {aiAlert?.alertTitle || (alertLoading ? 'Loading alert...' : 'Weather Alert')}
+                {alertTitle || (alertLoading ? 'Loading alert...' : 'Weather Alert')}
               </h3>
               <p className="text-sm mt-1 text-gray-700">
-                {aiAlert?.description || (aiAlert?.rawResponse ? aiAlert.rawResponse.substring(0, 200) : (alertLoading ? 'Fetching AI alert...' : 'No alert available.'))}
+                {alertDescription}
               </p>
-              {aiAlert?.recommendedActions && (
+              {alertActions && (
                 <div className="mt-2">
                   <p className="text-sm font-medium">Recommended Actions:</p>
                   <ul className="text-sm list-disc list-inside text-gray-600">
-                    {Array.isArray(aiAlert?.recommendedActions)
-                      ? aiAlert.recommendedActions.map((action, i) => <li key={i}>{action}</li>)
-                      : <li>{aiAlert?.recommendedActions}</li>
+                    {Array.isArray(alertActions)
+                      ? alertActions.map((action, i) => <li key={i}>{action}</li>)
+                      : <li>{alertActions}</li>
                     }
                   </ul>
                 </div>
               )}
             </div>
             <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
-              aiAlert?.alertLevel === 'Red' ? 'bg-danger-500 text-white' :
-              aiAlert?.alertLevel === 'Orange' ? 'bg-warning-500 text-white' :
-              aiAlert?.alertLevel === 'Yellow' ? 'bg-primary-500 text-white' :
+              alertLevel === 'Red' ? 'bg-danger-500 text-white' :
+              alertLevel === 'Orange' ? 'bg-warning-500 text-white' :
+              alertLevel === 'Yellow' ? 'bg-primary-500 text-white' :
               'bg-success-500 text-white'
             }`}>
-              {aiAlert?.alertLevel || (alertLoading ? 'Loading' : 'Info')}
+              {alertLevel || (alertLoading ? 'Loading' : 'Info')}
             </span>
           </div>
         </div>

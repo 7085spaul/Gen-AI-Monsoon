@@ -10,10 +10,20 @@ if (!geminiApiKey) {
 
 const genAI = new GoogleGenerativeAI(geminiApiKey);
 
+function getGeminiModel() {
+  return genAI.getGenerativeModel({ model: GEMINI_MODEL }, GEMINI_REQUEST_OPTIONS);
+}
+
+async function generateGeminiResponse(prompt) {
+  const model = getGeminiModel();
+  const result = await model.generateContent(prompt);
+  const response = await result.response;
+  const text = response.text();
+  return parseGeminiResponse(text);
+}
+
 export async function generatePreparednessPlan(userProfile, weatherData) {
   try {
-    const model = genAI.getGenerativeModel({ model: GEMINI_MODEL }, GEMINI_REQUEST_OPTIONS);
-    
     const prompt = `As an emergency preparedness expert, create a personalized monsoon preparedness plan based on the following information:
 
 User Profile:
@@ -41,12 +51,7 @@ Provide a comprehensive preparedness plan with:
 
 Format the response as structured JSON with clear categories.`;
 
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    const text = response.text();
-    
-    // Parse the response to extract structured data
-    return parseGeminiResponse(text);
+    return await generateGeminiResponse(prompt);
   } catch (error) {
     console.error('Error generating preparedness plan:', error);
     throw new Error('Failed to generate preparedness plan. Please try again.');
@@ -55,8 +60,6 @@ Format the response as structured JSON with clear categories.`;
 
 export async function generateEmergencyChecklist(scenario, userProfile) {
   try {
-    const model = genAI.getGenerativeModel({ model: GEMINI_MODEL }, GEMINI_REQUEST_OPTIONS);
-    
     const prompt = `Create a detailed emergency checklist for ${scenario} scenario.
 
 User Context:
@@ -76,11 +79,7 @@ Provide a comprehensive checklist with:
 
 Format as structured JSON with categories and items with completion status.`;
 
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    const text = response.text();
-    
-    return parseGeminiResponse(text);
+    return await generateGeminiResponse(prompt);
   } catch (error) {
     console.error('Error generating emergency checklist:', error);
     throw new Error('Failed to generate emergency checklist. Please try again.');
@@ -89,8 +88,6 @@ Format as structured JSON with categories and items with completion status.`;
 
 export async function generateTravelAdvisory(origin, destination, weatherData) {
   try {
-    const model = genAI.getGenerativeModel({ model: GEMINI_MODEL }, GEMINI_REQUEST_OPTIONS);
-    
     const prompt = `Provide travel advisory for journey from ${origin} to ${destination} during monsoon season.
 
 Current Weather Conditions:
@@ -109,11 +106,7 @@ Provide:
 
 Format as structured JSON with clear sections.`;
 
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    const text = response.text();
-    
-    return parseGeminiResponse(text);
+    return await generateGeminiResponse(prompt);
   } catch (error) {
     console.error('Error generating travel advisory:', error);
     throw new Error('Failed to generate travel advisory. Please try again.');
@@ -122,8 +115,6 @@ Format as structured JSON with clear sections.`;
 
 export async function generateSafetyRecommendations(weatherCondition, location) {
   try {
-    const model = genAI.getGenerativeModel({ model: GEMINI_MODEL }, GEMINI_REQUEST_OPTIONS);
-    
     const prompt = `Provide safety recommendations for ${weatherCondition} conditions in ${location}.
 
 Include:
@@ -137,11 +128,7 @@ Include:
 
 Format as structured JSON with priority levels (High/Medium/Low).`;
 
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    const text = response.text();
-    
-    return parseGeminiResponse(text);
+    return await generateGeminiResponse(prompt);
   } catch (error) {
     console.error('Error generating safety recommendations:', error);
     throw new Error('Failed to generate safety recommendations. Please try again.');
@@ -150,19 +137,13 @@ Format as structured JSON with priority levels (High/Medium/Low).`;
 
 export async function translateContent(content, targetLanguage) {
   try {
-    const model = genAI.getGenerativeModel({ model: GEMINI_MODEL }, GEMINI_REQUEST_OPTIONS);
-    
     const prompt = `Translate the following content to ${targetLanguage}. Maintain the structure and formatting:
 
 ${JSON.stringify(content)}
 
 Return the translated content in the same JSON structure.`;
 
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    const text = response.text();
-    
-    return parseGeminiResponse(text);
+    return await generateGeminiResponse(prompt);
   } catch (error) {
     console.error('Error translating content:', error);
     throw new Error('Failed to translate content. Please try again.');
@@ -171,8 +152,6 @@ Return the translated content in the same JSON structure.`;
 
 export async function generateRealTimeAlert(weatherData, location) {
   try {
-    const model = genAI.getGenerativeModel({ model: GEMINI_MODEL }, GEMINI_REQUEST_OPTIONS);
-    
     const prompt = `Generate a real-time weather alert for ${location} based on current conditions:
 
 Weather Data:
@@ -192,11 +171,7 @@ Provide:
 
 Format as structured JSON.`;
 
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    const text = response.text();
-    
-    return parseGeminiResponse(text);
+    return await generateGeminiResponse(prompt);
   } catch (error) {
     console.error('Error generating real-time alert:', error);
     throw new Error('Failed to generate alert. Please try again.');
