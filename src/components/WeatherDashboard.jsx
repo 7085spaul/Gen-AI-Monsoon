@@ -103,7 +103,7 @@ function WeatherDashboard({ userLocation, userProfile, onLoadingChange }) {
     );
   }
 
-  const riskLevel = React.useMemo(() => getMonsoonRiskLevel(weatherData), [weatherData]);
+  const riskLevel = getMonsoonRiskLevel(weatherData);
   const alertLevel = aiAlert?.alertLevel;
   const alertTitle = aiAlert?.alertTitle;
   const alertDescription = aiAlert?.description || (aiAlert?.rawResponse ? aiAlert.rawResponse.substring(0, 200) : (alertLoading ? 'Fetching AI alert...' : 'No alert available.'));
