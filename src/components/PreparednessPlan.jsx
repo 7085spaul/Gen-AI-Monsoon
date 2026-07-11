@@ -28,10 +28,16 @@ function PreparednessPlan({ userLocation, userProfile, onLoadingChange }) {
 
     try {
       const weatherData = await getCurrentWeather(userLocation);
-      const generatedPlan = await generatePreparednessPlan(userProfile, weatherData);
+      // Add location to profile for the API call
+      const profileWithLocation = {
+        ...userProfile,
+        location: userLocation
+      };
+      const generatedPlan = await generatePreparednessPlan(profileWithLocation, weatherData);
       setPlan(generatedPlan);
     } catch (err) {
-      setError(err.message);
+      console.error('[v0] Error generating plan:', err);
+      setError(err.message || 'Failed to generate preparedness plan. Please try again.');
     } finally {
       setLoading(false);
       onLoadingChange(false);

@@ -36,7 +36,8 @@ function TravelAdvisory({ userLocation, onLoadingChange }) {
       const generatedAdvisory = await generateTravelAdvisory(userLocation, destination, weatherData);
       setAdvisory(generatedAdvisory);
     } catch (err) {
-      setError(err.message);
+      console.error('[v0] Error generating advisory:', err);
+      setError(err.message || 'Failed to generate travel advisory. Please try again.');
     } finally {
       setLoading(false);
       onLoadingChange(false);

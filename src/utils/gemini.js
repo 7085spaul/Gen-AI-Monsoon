@@ -1,25 +1,36 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
 const geminiApiKey = import.meta.env.VITE_GEMINI_API_KEY;
-const GEMINI_MODEL = 'gemini-3.5-flash';
-const GEMINI_REQUEST_OPTIONS = { apiVersion: 'v1' };
+const GEMINI_MODEL = 'gemini-1.5-flash';
 
 if (!geminiApiKey) {
-  console.error('GEMINI_API_KEY is not set in environment variables');
+  console.warn('VITE_GEMINI_API_KEY is not set in environment variables');
 }
 
-const genAI = new GoogleGenerativeAI(geminiApiKey);
+const genAI = geminiApiKey ? new GoogleGenerativeAI(geminiApiKey) : null;
 
 function getGeminiModel() {
-  return genAI.getGenerativeModel({ model: GEMINI_MODEL }, GEMINI_REQUEST_OPTIONS);
+  if (!genAI) {
+    throw new Error('Gemini API key is not configured. Please set VITE_GEMINI_API_KEY environment variable.');
+  }
+  return genAI.getGenerativeModel({ model: GEMINI_MODEL });
 }
 
 async function generateGeminiResponse(prompt) {
-  const model = getGeminiModel();
-  const result = await model.generateContent(prompt);
-  const response = await result.response;
-  const text = response.text();
-  return parseGeminiResponse(text);
+  try {
+    if (!geminiApiKey) {
+      throw new Error('Gemini API key is not configured');
+    }
+    
+    const model = getGeminiModel();
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const text = response.text();
+    return parseGeminiResponse(text);
+  } catch (error) {
+    console.error('[v0] Gemini API error:', error);
+    throw error;
+  }
 }
 
 export async function generatePreparednessPlan(userProfile, weatherData) {
@@ -202,7 +213,11 @@ export function parseGeminiResponse(text) {
 
 export async function chatWithAI(message, context) {
   try {
-    const model = genAI.getGenerativeModel({ model: GEMINI_MODEL }, GEMINI_REQUEST_OPTIONS);
+    if (!geminiApiKey) {
+      throw new Error('Gemini API key is not configured');
+    }
+    
+    const model = getGeminiModel();
     
     const prompt = `You are a monsoon preparedness assistant. Answer the user's question based on the context.
 
@@ -216,7 +231,7 @@ Provide helpful, accurate, and actionable information about monsoon preparedness
     const response = await result.response;
     return response.text();
   } catch (error) {
-    console.error('Error in AI chat:', error);
+    console.error('[v0] AI chat error:', error);
     throw new Error('Failed to get AI response. Please try again.');
   }
 }

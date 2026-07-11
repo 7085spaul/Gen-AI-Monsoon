@@ -30,10 +30,16 @@ function EmergencyChecklist({ userProfile, onLoadingChange }) {
     setCheckedItems({});
 
     try {
-      const generatedChecklist = await generateEmergencyChecklist(selectedScenario, userProfile);
+      // Add location if available
+      const profileWithLocation = {
+        ...userProfile,
+        location: userProfile.location || 'Your location'
+      };
+      const generatedChecklist = await generateEmergencyChecklist(selectedScenario, profileWithLocation);
       setChecklist(generatedChecklist);
     } catch (err) {
-      setError(err.message);
+      console.error('[v0] Error generating checklist:', err);
+      setError(err.message || 'Failed to generate checklist. Please try again.');
     } finally {
       setLoading(false);
       onLoadingChange(false);

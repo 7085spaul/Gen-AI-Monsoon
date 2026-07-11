@@ -45,10 +45,12 @@ function AIChat({ userLocation, userProfile, onLoadingChange }) {
       
       setMessages(prev => [...prev, { role: 'assistant', content: aiResponse }]);
     } catch (err) {
-      setError(err.message);
+      console.error('[v0] Error in AI chat:', err);
+      const errorMessage = err.message || 'Sorry, I encountered an error. Please try again.';
+      setError(errorMessage);
       setMessages(prev => [...prev, { 
         role: 'assistant', 
-        content: 'Sorry, I encountered an error. Please try again.' 
+        content: errorMessage
       }]);
     } finally {
       setLoading(false);

@@ -32,7 +32,8 @@ function SafetyRecommendations({ userLocation, onLoadingChange }) {
       const generatedRecommendations = await generateSafetyRecommendations(selectedCondition, userLocation);
       setRecommendations(generatedRecommendations);
     } catch (err) {
-      setError(err.message);
+      console.error('[v0] Error generating recommendations:', err);
+      setError(err.message || 'Failed to generate safety recommendations. Please try again.');
     } finally {
       setLoading(false);
       onLoadingChange(false);

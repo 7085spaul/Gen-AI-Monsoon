@@ -57,7 +57,7 @@ function RealTimeAlerts({ userLocation, onLoadingChange }) {
       setAlerts(combinedAlerts);
       setLastUpdated(new Date());
 
-      // Save alert to Firebase
+      // Save alert to Firebase (commented out if Firebase not configured)
       try {
         await saveAlert('guest-user', {
           location: userLocation,
@@ -68,7 +68,8 @@ function RealTimeAlerts({ userLocation, onLoadingChange }) {
         console.error('Error saving alert to Firebase:', saveError);
       }
     } catch (err) {
-      setError(err.message);
+      console.error('[v0] Error fetching alerts:', err);
+      setError(err.message || 'Failed to fetch alerts. Please try again.');
     } finally {
       setLoading(false);
       onLoadingChange(false);
