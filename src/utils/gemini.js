@@ -178,7 +178,7 @@ Format as structured JSON.`;
   }
 }
 
-function parseGeminiResponse(text) {
+export function parseGeminiResponse(text) {
   try {
     // Try to extract JSON from the response
     const jsonMatch = text.match(/\{[\s\S]*\}/);

@@ -4,6 +4,7 @@ import { Cloud, User, MapPin, Settings, LogIn } from 'lucide-react';
 function Header({ userLocation, onLocationChange, userProfile, onProfileUpdate }) {
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [locationInput, setLocationInput] = useState(userLocation || '');
+  const [locationError, setLocationError] = useState('');
   const [profileData, setProfileData] = useState(userProfile || {
     familySize: 1,
     hasChildren: false,
@@ -13,15 +14,49 @@ function Header({ userLocation, onLocationChange, userProfile, onProfileUpdate }
     medicalConditions: ''
   });
 
+  // Validate location input
+  const validateLocation = (location) => {
+    if (!location || location.trim().length === 0) {
+      setLocationError('Location cannot be empty');
+      return false;
+    }
+    if (location.trim().length < 2) {
+      setLocationError('Location must be at least 2 characters');
+      return false;
+    }
+    if (location.trim().length > 100) {
+      setLocationError('Location must be less than 100 characters');
+      return false;
+    }
+    if (!/^[a-zA-Z\s,\-()]*$/.test(location)) {
+      setLocationError('Location can only contain letters, spaces, commas, hyphens, and parentheses');
+      return false;
+    }
+    setLocationError('');
+    return true;
+  };
+
+  const handleLocationChange = (e) => {
+    const value = e.target.value;
+    setLocationInput(value);
+    if (value) validateLocation(value);
+  };
+
   const handleLocationSubmit = (e) => {
     e.preventDefault();
-    if (locationInput.trim()) {
+    if (validateLocation(locationInput)) {
       onLocationChange(locationInput.trim());
+      setLocationError('');
     }
   };
 
   const handleProfileSave = (e) => {
     e.preventDefault();
+    // Validate family size
+    if (profileData.familySize < 1 || profileData.familySize > 20) {
+      alert('Family size must be between 1 and 20');
+      return;
+    }
     onProfileUpdate(profileData);
     setShowProfileModal(false);
   };
@@ -43,25 +78,38 @@ function Header({ userLocation, onLocationChange, userProfile, onProfileUpdate }
 
             <div className="flex items-center gap-4">
               {/* Location Input */}
-              <form onSubmit={handleLocationSubmit} className="flex items-center gap-2">
-                <div className="relative">
-                  <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
-                  <input
-                    type="text"
-                    value={locationInput}
-                    onChange={(e) => setLocationInput(e.target.value)}
-                    placeholder="Enter your city"
-                    className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none w-48"
-                    aria-label="Location input"
-                  />
+              <form onSubmit={handleLocationSubmit} className="flex flex-col gap-1">
+                <div className="flex items-center gap-2">
+                  <div className="relative">
+                    <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} aria-hidden="true" />
+                    <input
+                      type="text"
+                      value={locationInput}
+                      onChange={handleLocationChange}
+                      placeholder="Enter your city"
+                      maxLength="100"
+                      className={`pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none w-48 ${
+                        locationError ? 'border-red-500 focus:ring-red-500' : 'border-gray-300'
+                      }`}
+                      aria-label="Location input"
+                      aria-describedby={locationError ? 'location-error' : undefined}
+                      required
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    className="btn-primary"
+                    aria-label="Set location"
+                    disabled={!locationInput.trim()}
+                  >
+                    Set
+                  </button>
                 </div>
-                <button
-                  type="submit"
-                  className="btn-primary"
-                  aria-label="Set location"
-                >
-                  Set
-                </button>
+                {locationError && (
+                  <span id="location-error" className="text-xs text-red-600" role="alert">
+                    {locationError}
+                  </span>
+                )}
               </form>
 
               {/* Profile Button */}

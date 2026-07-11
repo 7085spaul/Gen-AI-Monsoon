@@ -50,7 +50,7 @@ function App() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-cyan-50">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-cyan-50" role="application" aria-label="Monsoon Preparedness Application">
       <Header 
         userLocation={userLocation}
         onLocationChange={handleLocationChange}
@@ -58,9 +58,9 @@ function App() {
         onProfileUpdate={handleProfileUpdate}
       />
 
-      <nav className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-40">
+      <nav className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-40" aria-label="Main navigation">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex overflow-x-auto py-2 gap-2">
+          <div className="flex overflow-x-auto py-2 gap-2" role="tablist" aria-label="Feature tabs">
             {tabs.map((tab) => {
               const Icon = tab.icon;
               return (
@@ -74,8 +74,11 @@ function App() {
                   }`}
                   aria-label={tab.label}
                   aria-current={activeTab === tab.id ? 'page' : undefined}
+                  role="tab"
+                  aria-selected={activeTab === tab.id}
+                  tabIndex={activeTab === tab.id ? 0 : -1}
                 >
-                  <Icon size={18} />
+                  <Icon size={18} aria-hidden="true" />
                   <span className="hidden sm:inline">{tab.label}</span>
                 </button>
               );
@@ -84,17 +87,17 @@ function App() {
         </div>
       </nav>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8" role="main" aria-label="Main content">
         {isLoading && (
-          <div className="flex items-center justify-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+          <div className="flex items-center justify-center py-12" role="status" aria-live="polite">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600" aria-label="Loading"></div>
           </div>
         )}
 
         {!userLocation && (
-          <div className="card max-w-md mx-auto text-center">
-            <Cloud size={48} className="mx-auto mb-4 text-primary-600" />
-            <h2 className="text-xl font-semibold mb-2">Welcome to Monsoon Preparedness AI</h2>
+          <div className="card max-w-md mx-auto text-center" role="region" aria-labelledby="welcome-heading">
+            <Cloud size={48} className="mx-auto mb-4 text-primary-600" aria-hidden="true" />
+            <h2 className="text-xl font-semibold mb-2" id="welcome-heading">Welcome to Monsoon Preparedness AI</h2>
             <p className="text-gray-600 mb-4">Please enter your location to get started with personalized weather alerts and preparedness plans.</p>
           </div>
         )}
@@ -158,9 +161,9 @@ function App() {
         )}
       </main>
 
-      <footer className="bg-white border-t border-gray-200 mt-12 py-6">
+      <footer className="bg-white border-t border-gray-200 mt-12 py-6" role="contentinfo">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-gray-600">
-          <p>Monsoon Preparedness AI - Powered by Google Gemini & OpenWeatherMap</p>
+          <p>Monsoon Preparedness AI - Powered by Google Gemini &amp; OpenWeatherMap</p>
           <p className="text-sm mt-1">Real-time weather alerts and AI-powered preparedness guidance</p>
         </div>
       </footer>
