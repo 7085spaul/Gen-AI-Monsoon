@@ -1,7 +1,7 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
 const geminiApiKey = import.meta.env.VITE_GEMINI_API_KEY;
-const GEMINI_MODEL = 'gemini-1.5-flash';
+const GEMINI_MODEL = 'gemini-pro';
 
 if (!geminiApiKey) {
   console.warn('VITE_GEMINI_API_KEY is not set in environment variables');
